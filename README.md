@@ -1,66 +1,200 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+**Description:**
+This code creates a dynamic image slider with an associated image list that allows you to reorder the images in real-time. The slider automatically transitions between images every 3 seconds and provides a user-friendly interface for changing the order of images.
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+**Code Documentation:**
 
-## About Laravel
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Meta tags and title -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Slider with Image List</title>
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+    <!-- CSS styles for styling the slider and image list -->
+    <style>
+        .slider-container {
+            width: 400px;
+            height: 300px;
+            overflow: hidden;
+            position: relative;
+        }
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+        .slider-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease-in-out;
+        }
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
 
-## Learning Laravel
+        table, th, td {
+            border: 1px solid #ddd;
+        }
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+        th, td {
+            padding: 8px;
+            text-align: center;
+        }
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+        .order-control {
+            width: 80px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Slider container -->
+    <div class="slider-container">
+        <img class="slider-image" id="sliderImage" src="" alt="Slider Image">
+    </div>
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 2000 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+    <!-- Image List -->
+    <h2>Image List</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Index</th>
+                <th>Image</th>
+                <th>Order</th>
+            </tr>
+        </thead>
+        <tbody id="imageList">
+        </tbody>
+    </table>
 
-## Laravel Sponsors
+    <!-- JavaScript code -->
+    <script>
+        // Array of image URLs
+        const imageUrls = [
+            // Add your image URLs here
+        ];
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
+        const sliderImage = document.getElementById('sliderImage');
+        const imageList = document.getElementById('imageList');
+        let currentIndex = 0;
 
-### Premium Partners
+        // Function to change the image
+        function changeImage() {
+            sliderImage.src = imageUrls[currentIndex];
+            currentIndex = (currentIndex + 1) % imageUrls.length; // Loop through images
+        }
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[OP.GG](https://op.gg)**
-- **[WebReinvent](https://webreinvent.com/?utm_source=laravel&utm_medium=github&utm_campaign=patreon-sponsors)**
-- **[Lendio](https://lendio.com)**
+        // Function to populate the image list table
+        function populateImageList() {
+            // Clears existing content
+            imageList.innerHTML = '';
+            
+            // Iterates through image URLs
+            imageUrls.forEach((imageUrl, index) => {
+                // Creates a new table row
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${index}</td>
+                    <td><img src="${imageUrl}" alt="Image ${index}" width="50"></td>
+                    <td>
+                        <input class="order-control" type="number" value="${index + 1}" min="1">
+                    </td>
+                `;
+                // Adds an event listener to handle order changes
+                row.querySelector('input').addEventListener('change', () => {
+                    const newOrder = parseInt(row.querySelector('input').value) - 1;
+                    if (newOrder >= 0 && newOrder < imageUrls.length) {
+                        const movedImage = imageUrls.splice(index, 1);
+                        imageUrls.splice(newOrder, 0, ...movedImage);
+                        currentIndex = newOrder;
+                        changeImage();
+                        populateImageList();
+                    }
+                });
+                // Appends the row to the image list table
+                imageList.appendChild(row);
+            });
+        }
 
-## Contributing
+        // Initial image load and image list population
+        changeImage();
+        populateImageList();
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+        // Change image every 3 seconds (adjust as needed)
+        setInterval(changeImage, 3000);
+    </script>
+</body>
+</html>
+```
 
-## Code of Conduct
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+**javascript**
 
-## Security Vulnerabilities
+```javascript
+// Array of image URLs
+const imageUrls = [
+    'https://images.unsplash.com/photo-1594476664296-8c552053aef3?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2080&q=80',
+    'https://images.unsplash.com/photo-1602015103066-f45732e2aa84?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2080&q=80',
+    'https://images.unsplash.com/photo-1604922824961-87cefb2e4b07?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2080&q=80',
+    // Add more image URLs as needed
+];
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+const sliderImage = document.getElementById('sliderImage');
+const imageList = document.getElementById('imageList');
+let currentIndex = 0;
 
-## License
+// Function to change the image
+function changeImage() {
+    sliderImage.src = imageUrls[currentIndex];
+    currentIndex = (currentIndex + 1) % imageUrls.length; // Loop through images
+}
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+// Populate the image list table
+function populateImageList() {
+    imageList.innerHTML = '';
+    imageUrls.forEach((imageUrl, index) => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${index}</td>
+            <td><img src="${imageUrl}" alt="Image ${index}" width="50"></td>
+            <td>
+                <input class="order-control" type="number" value="${index + 1}" min="1">
+            </td>
+        `;
+        row.querySelector('input').addEventListener('change', () => {
+            const newOrder = parseInt(row.querySelector('input').value) - 1;
+            if (newOrder >= 0 && newOrder < imageUrls.length) {
+                const movedImage = imageUrls.splice(index, 1);
+                imageUrls.splice(newOrder, 0, ...movedImage);
+                currentIndex = newOrder;
+                changeImage();
+                populateImageList();
+            }
+        });
+        imageList.appendChild(row);
+    });
+}
+
+// Initial image load and image list population
+changeImage();
+populateImageList();
+
+// Change image every 3 seconds (adjust as needed)
+setInterval(changeImage, 3000);
+```
+
+Here's a step-by-step explanation of the JavaScript code:
+
+1. **Array of Image URLs**: An array named `imageUrls` is defined, which contains URLs of the images you want to display in the slider. You can add or remove image URLs as needed.
+
+2. **Element Selection**: The code selects HTML elements using `document.getElementById`. `sliderImage` represents the `img` element where the slider image will be displayed, and `imageList` represents the `tbody` element of the image list table.
+
+3. **changeImage Function**: This function is responsible for changing the image displayed in the slider. It sets the `src` attribute of the `sliderImage` element to the URL of the current image in the `imageUrls` array. The `currentIndex` is used to keep track of which image is currently displayed, and it wraps around when reaching the end of the array.
+
+4. **populateImageList Function**: This function populates the image list table with rows, each containing the index, a thumbnail image, and an input field to control the order of images. Event listeners are added to the input fields to update the order of images in the `imageUrls` array when changed.
+
+5. **Initial Image Load and Image List Population**: `changeImage` is called to load the initial image. `populateImageList` is called to create the image list table.
+
+6. **Interval for Image Change**: `setInterval` is used to call the `changeImage` function every 3 seconds, causing the slider to automatically transition to the next image.
+
+**Laravel project link : [Click ME](https://github.com/tahsin-liberate/Dynamic-Image-Slider)**
